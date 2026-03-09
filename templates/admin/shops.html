@@ -1,0 +1,95 @@
+{% extends 'dashboard/admin_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2>Shop Management</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{{ url_for('admin.add_shop') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add New Shop
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Shop Name</th>
+                            <th>Owner</th>
+                            <th>Email</th>
+                            <th>Products</th>
+                            <th>Revenue</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if shops %}
+                            {% for shop in shops %}
+                            <tr>
+                                <td><strong>{{ shop.shop_name }}</strong></td>
+                                <td>{{ shop.owner_name }}</td>
+                                <td>{{ shop.email }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ shop.total_products }} products</span>
+                                </td>
+                                <td>₹{{ "%.2f"|format(shop.total_revenue) }}</td>
+                                <td>
+                                    {% if shop.status == 'Active' %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ shop.created_at.strftime('%Y-%m-%d') if shop.created_at else 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('admin.view_shop', id=shop.id) }}" class="btn btn-sm btn-info" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.edit_shop', id=shop.id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('admin.toggle_status', id=shop.id) }}" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-warning" title="Toggle Status">
+                                                <i class="fas fa-power-off"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('admin.delete_shop', id=shop.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this shop? All related data will be permanently deleted.');">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center">No shops found. <a href="{{ url_for('admin.add_shop') }}">Add your first shop</a></td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

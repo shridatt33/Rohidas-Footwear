@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Rohidas Footwear{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">
+            <i class="fas fa-user-shield me-2"></i>Admin Dashboard
+        </a>
+        <div class="ms-auto">
+            <span class="text-white me-3">Welcome, {{ user_name }}</span>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" href="{{ url_for('auth.admin_dashboard') }}"><i class="fas fa-home me-2"></i>Dashboard</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#"><i class="fas fa-users me-2"></i>Users</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('admin.list_shops') }}"><i class="fas fa-store me-2"></i>Shops</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#"><i class="fas fa-chart-bar me-2"></i>Reports</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#"><i class="fas fa-cog me-2"></i>Settings</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+            {% block dashboard_content %}
+            <h2 class="mb-4">Dashboard Overview</h2>
+            
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                            <h3 class="fw-bold">150</h3>
+                            <p class="text-muted mb-0">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-store fa-3x text-success mb-3"></i>
+                            <h3 class="fw-bold">25</h3>
+                            <p class="text-muted mb-0">Active Shops</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-rupee-sign fa-3x text-warning mb-3"></i>
+                            <h3 class="fw-bold">₹5.2L</h3>
+                            <p class="text-muted mb-0">Total Revenue</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box fa-3x text-danger mb-3"></i>
+                            <h3 class="fw-bold">1,250</h3>
+                            <p class="text-muted mb-0">Products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">Recent Activity</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-01-15</td>
+                                    <td>New shop registered</td>
+                                    <td>Shop #26</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2024-01-14</td>
+                                    <td>Product added</td>
+                                    <td>Admin</td>
+                                    <td><span class="badge bg-info">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2024-01-13</td>
+                                    <td>Marketing campaign</td>
+                                    <td>Marketing Team</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endblock dashboard_content %}
+        </div>
+    </div>
+</div>
+{% endblock %}

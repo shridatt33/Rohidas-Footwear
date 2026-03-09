@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - {{ shop.shop_name }}{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}">
+            <i class="fas fa-shoe-prints text-success me-2"></i>{{ shop.shop_name }}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('shop.public_products', shop_name=shop.shop_name) }}">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('shop.public_products', shop_name=shop.shop_name) }}">Products</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Image Section -->
+        <div class="col-lg-6">
+            <div class="row">
+                <!-- Vertical Thumbnails -->
+                {% if product.images and product.images|length > 1 %}
+                <div class="col-2">
+                    <div class="d-flex flex-column gap-2">
+                        {% for image in product.images %}
+                        <img src="{{ url_for('static', filename='uploads/products/' + image.image_path) }}" 
+                             class="img-thumbnail thumbnail-img" 
+                             style="cursor: pointer; width: 100%; height: 80px; object-fit: cover;"
+                             onclick="changeMainImage(this.src)"
+                             alt="Thumbnail">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Main Image -->
+                <div class="{% if product.images and product.images|length > 1 %}col-10{% else %}col-12{% endif %}">
+                    {% if product.images %}
+                    <div class="main-image-container">
+                        <img id="mainImage" 
+                             src="{{ url_for('static', filename='uploads/products/' + product.images[0].image_path) }}" 
+                             class="img-fluid rounded shadow" 
+                             alt="{{ product.name }}" 
+                             style="width: 100%; height: 500px; object-fit: cover;">
+                    </div>
+                    {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 500px;">
+                        <i class="fas fa-image fa-5x text-muted"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Details Section -->
+        <div class="col-lg-6">
+            <!-- Category Badge -->
+            <div class="mb-2">
+                {% if product.category_name %}
+                <span class="badge bg-success">{{ product.category_name }}</span>
+                {% endif %}
+                {% if product.is_featured %}
+                <span class="badge bg-warning text-dark">⭐ Featured</span>
+                {% endif %}
+            </div>
+
+            <!-- Product Title -->
+            <h1 class="fw-bold mb-3" style="font-size: 2rem;">{{ product.name }}</h1>
+
+            <!-- Price Section -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <h2 class="text-success mb-0 fw-bold" id="offerPrice">
+                        {% if product.variants %}
+                        ₹{{ product.variants[0].price }}
+                        {% else %}
+                        ₹0
+                        {% endif %}
+                    </h2>
+                    <span class="text-muted text-decoration-line-through" id="oldPrice" style="font-size: 1.2rem;">
+                        {% if product.variants %}
+                        ₹{{ (product.variants[0].price|float * 1.2)|round(2) }}
+                        {% else %}
+                        ₹0
+                        {% endif %}
+                    </span>
+                    <span class="badge bg-danger" id="discountBadge">20% OFF</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <p class="text-muted">{{ product.description if product.description else 'Premium quality footwear crafted with care for ultimate comfort and style.' }}</p>
+            </div>
+
+            <!-- Size Selection -->
+            {% if product.variants %}
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3">Select Size</h5>
+                <div class="d-flex flex-wrap gap-2" id="sizeButtons">
+                    {% for variant in product.variants %}
+                    <button class="btn btn-outline-success size-btn rounded-pill px-4" 
+                            data-size="{{ variant.size }}"
+                            data-price="{{ variant.price }}"
+                            data-stock="{{ variant.stock }}"
+                            onclick="selectSize(this)">
+                        {{ variant.size }}
+                    </button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="selectedSize" value="">
+            </div>
+            {% endif %}
+
+            <!-- Stock Status -->
+            <div class="mb-4">
+                <p id="stockStatus" class="mb-0">
+                    {% if product.variants %}
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span class="text-success fw-bold">In Stock</span> 
+                    <span class="text-muted">{{ product.variants[0].stock }} units available</span>
+                    {% else %}
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span class="text-success fw-bold">In Stock</span>
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Optional Add-on -->
+            <div class="mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="extraSole" onchange="updateTotal()">
+                    <label class="form-check-label" for="extraSole">
+                        Add Extra Sole <span class="text-success fw-bold">(+ ₹150)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Quantity Selector -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3">Quantity</h5>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-secondary" onclick="changeQuantity(-1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span class="fw-bold fs-4" id="quantity">1</span>
+                    <button class="btn btn-outline-secondary" onclick="changeQuantity(1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Price Summary -->
+            <div class="card mb-4 border-0 bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Product Price:</span>
+                        <span class="fw-bold" id="productPrice">
+                            {% if product.variants %}
+                            ₹{{ product.variants[0].price }}
+                            {% else %}
+                            ₹0
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2" id="addonRow" style="display: none !important;">
+                        <span class="text-muted">Extra Sole:</span>
+                        <span class="fw-bold">₹150</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Quantity:</span>
+                        <span class="fw-bold" id="quantityDisplay">1</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold fs-5">Order Total:</span>
+                        <span class="fw-bold fs-5 text-success" id="orderTotal">
+                            {% if product.variants %}
+                            ₹{{ product.variants[0].price }}
+                            {% else %}
+                            ₹0
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buy Buttons -->
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary btn-lg" onclick="addToCart()">
+                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                </button>
+                <button class="btn btn-success btn-lg" onclick="buyNow()">
+                    <i class="fas fa-bolt me-2"></i>Buy Now
+                </button>
+                <button class="btn btn-outline-success btn-lg" onclick="orderWhatsApp()">
+                    <i class="fab fa-whatsapp me-2"></i>Order via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.size-btn {
+    transition: all 0.3s ease;
+    min-width: 60px;
+}
+
+.size-btn.active {
+    background-color: #198754 !important;
+    color: white !important;
+    border-color: #198754 !important;
+}
+
+.thumbnail-img {
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.thumbnail-img:hover {
+    border-color: #198754;
+    transform: scale(1.05);
+}
+
+.main-image-container img {
+    transition: all 0.3s ease;
+}
+</style>
+
+<script>
+// Store variants data
+const variants = {{ variants_json|safe }};
+let selectedSize = '';
+let selectedPrice = {% if product.variants %}{{ product.variants[0].price|float }}{% else %}0{% endif %};
+let selectedStock = {% if product.variants %}{{ product.variants[0].stock }}{% else %}0{% endif %};
+let quantity = 1;
+const extraSoleCost = 150;
+
+// Auto-select first size
+window.addEventListener('DOMContentLoaded', function() {
+    const firstSizeBtn = document.querySelector('.size-btn');
+    if (firstSizeBtn) {
+        selectSize(firstSizeBtn);
+    }
+});
+
+// Change main image with smooth transition
+function changeMainImage(src) {
+    const mainImg = document.getElementById('mainImage');
+    mainImg.style.opacity = '0.5';
+    setTimeout(() => {
+        mainImg.src = src;
+        mainImg.style.opacity = '1';
+    }, 150);
+}
+
+// Select size and update price/stock
+function selectSize(button) {
+    // Remove active class from all buttons
+    document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Add active class to selected button
+    button.classList.add('active');
+    
+    // Get data from button
+    selectedSize = button.getAttribute('data-size');
+    selectedPrice = parseFloat(button.getAttribute('data-price'));
+    selectedStock = parseInt(button.getAttribute('data-stock'));
+    
+    // Update price displays
+    const oldPrice = (selectedPrice * 1.2).toFixed(2);
+    document.getElementById('offerPrice').textContent = '₹' + selectedPrice;
+    document.getElementById('oldPrice').textContent = '₹' + oldPrice;
+    document.getElementById('productPrice').textContent = '₹' + selectedPrice;
+    
+    // Update stock display
+    const stockElement = document.getElementById('stockStatus');
+    if (selectedStock > 0) {
+        stockElement.innerHTML = '<i class="fas fa-check-circle text-success me-2"></i><span class="text-success fw-bold">In Stock</span> <span class="text-muted">' + selectedStock + ' units available</span>';
+    } else {
+        stockElement.innerHTML = '<i class="fas fa-times-circle text-danger me-2"></i><span class="text-danger fw-bold">Out of Stock</span>';
+    }
+    
+    // Store selected size
+    document.getElementById('selectedSize').value = selectedSize;
+    
+    // Update total
+    updateTotal();
+}
+
+// Change quantity
+function changeQuantity(change) {
+    const newQuantity = quantity + change;
+    if (newQuantity >= 1 && newQuantity <= selectedStock) {
+        quantity = newQuantity;
+        document.getElementById('quantity').textContent = quantity;
+        document.getElementById('quantityDisplay').textContent = quantity;
+        updateTotal();
+    }
+}
+
+// Update total price
+function updateTotal() {
+    let total = selectedPrice * quantity;
+    
+    // Add extra sole if selected
+    const extraSoleChecked = document.getElementById('extraSole').checked;
+    const addonRow = document.getElementById('addonRow');
+    
+    if (extraSoleChecked) {
+        total += extraSoleCost;
+        addonRow.style.display = 'flex';
+    } else {
+        addonRow.style.display = 'none';
+    }
+    
+    document.getElementById('orderTotal').textContent = '₹' + total.toFixed(2);
+}
+
+// Add to Cart function
+function addToCart() {
+    if (!selectedSize) {
+        alert('Please select a size');
+        return;
+    }
+    if (selectedStock <= 0) {
+        alert('This size is out of stock');
+        return;
+    }
+    
+    const extraSole = document.getElementById('extraSole').checked;
+    const total = parseFloat(document.getElementById('orderTotal').textContent.replace('₹', ''));
+    
+    alert('Added to Cart!\n\nProduct: {{ product.name }}\nSize: ' + selectedSize + '\nQuantity: ' + quantity + '\n' + (extraSole ? 'Extra Sole: Yes\n' : '') + 'Total: ₹' + total);
+}
+
+// Buy Now function
+function buyNow() {
+    if (!selectedSize) {
+        alert('Please select a size');
+        return;
+    }
+    if (selectedStock <= 0) {
+        alert('This size is out of stock');
+        return;
+    }
+    
+    const extraSole = document.getElementById('extraSole').checked;
+    const total = parseFloat(document.getElementById('orderTotal').textContent.replace('₹', ''));
+    
+    alert('Proceeding to Checkout...\n\nProduct: {{ product.name }}\nSize: ' + selectedSize + '\nQuantity: ' + quantity + '\n' + (extraSole ? 'Extra Sole: Yes\n' : '') + 'Total: ₹' + total);
+}
+
+// WhatsApp Order function
+function orderWhatsApp() {
+    if (!selectedSize) {
+        alert('Please select a size');
+        return;
+    }
+    if (selectedStock <= 0) {
+        alert('This size is out of stock');
+        return;
+    }
+    
+    const whatsappNumber = '{{ settings.whatsapp_number if settings and settings.whatsapp_number else "" }}';
+    if (!whatsappNumber) {
+        alert('WhatsApp number not configured');
+        return;
+    }
+    
+    const extraSole = document.getElementById('extraSole').checked;
+    const total = parseFloat(document.getElementById('orderTotal').textContent.replace('₹', ''));
+    
+    let message = `Hi, I want to order:\n\n`;
+    message += `Product: {{ product.name }}\n`;
+    message += `Size: ${selectedSize}\n`;
+    message += `Quantity: ${quantity}\n`;
+    if (extraSole) {
+        message += `Extra Sole: Yes (+₹150)\n`;
+    }
+    message += `\nTotal: ₹${total}`;
+    
+    const url = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+</script>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">{{ settings.footer_text if settings and settings.footer_text else '© 2024 ' + shop.shop_name + '. All rights reserved.' }}</p>
+    </div>
+</footer>
+{% endblock %}

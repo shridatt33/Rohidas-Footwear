@@ -1,0 +1,176 @@
+{% extends 'dashboard/admin_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Shop Details: {{ shop.shop_name }}</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.list_shops') }}">Shops</a></li>
+                    <li class="breadcrumb-item active">{{ shop.shop_name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Shop Information Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Shop Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Shop Name:</strong> {{ shop.shop_name }}</p>
+                    <p><strong>Owner:</strong> {{ shop.owner_name }}</p>
+                    <p><strong>Email:</strong> {{ shop.email }}</p>
+                    <p><strong>Phone:</strong> {{ shop.phone or 'N/A' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Address:</strong> {{ shop.address or 'N/A' }}</p>
+                    <p><strong>Shop Slug:</strong> {{ shop.shop_slug }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if shop.status == 'Active' %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Created:</strong> {{ shop.created_at.strftime('%Y-%m-%d %H:%M') if shop.created_at else 'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Total Products</h5>
+                    <h2>{{ stats.total_products }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Orders</h5>
+                    <h2>{{ stats.total_orders }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <h2>₹{{ "%.2f"|format(stats.total_revenue) }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Products (Last 10)</h5>
+        </div>
+        <div class="card-body">
+            {% if products %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Featured</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>₹{{ "%.2f"|format(product.price) }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>
+                                    {% if product.is_featured %}
+                                        <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ product.created_at.strftime('%Y-%m-%d') if product.created_at else 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No products found</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Categories</h5>
+        </div>
+        <div class="card-body">
+            {% if categories %}
+                <div class="row">
+                    {% for category in categories %}
+                        <div class="col-md-3 mb-2">
+                            <span class="badge bg-primary">{{ category.category_name }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No categories found</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Website Settings Section -->
+    {% if settings %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Website Settings</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Banner Title:</strong> {{ settings.banner_title or 'N/A' }}</p>
+            <p><strong>Banner Subtitle:</strong> {{ settings.banner_subtitle or 'N/A' }}</p>
+            <p><strong>Contact Number:</strong> {{ settings.contact_number or 'N/A' }}</p>
+            <p><strong>WhatsApp:</strong> {{ settings.whatsapp_number or 'N/A' }}</p>
+            <p><strong>Footer Text:</strong> {{ settings.footer_text or 'N/A' }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-md-12">
+            <a href="{{ url_for('admin.edit_shop', id=shop.id) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Shop
+            </a>
+            <a href="{{ url_for('admin.list_shops') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

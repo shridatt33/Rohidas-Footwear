@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# Flask
+instance/
+.webassets-cache
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Uploads (keep folder structure, ignore files)
+static/uploads/*
+!static/uploads/.gitkeep
+static/uploads/products/*
+!static/uploads/products/.gitkeep
+static/uploads/categories/*
+!static/uploads/categories/.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Project specific
+*.sql.backup
+migrations_backup/
+temp/

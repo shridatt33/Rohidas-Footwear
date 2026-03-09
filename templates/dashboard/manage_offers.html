@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Offers - Shop Dashboard{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ url_for('auth.shop_dashboard') }}">
+            <i class="fas fa-store me-2"></i>Shop Dashboard
+        </a>
+        <div class="ms-auto">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('auth.shop_dashboard') }}">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_products') }}">
+                        <i class="fas fa-box me-2"></i>Manage Products
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_categories') }}">
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" href="{{ url_for('shop.manage_offers') }}">
+                        <i class="fas fa-percent me-2"></i>Offers
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.website_settings') }}">
+                        <i class="fas fa-cog me-2"></i>Website Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Manage Offers</h2>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addOfferModal">
+                    <i class="fas fa-plus me-2"></i>Add Offer
+                </button>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Offer Title</th>
+                                    <th>Discount</th>
+                                    <th>Valid Till</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for offer in offers %}
+                                <tr>
+                                    <td>{{ offer.title }}</td>
+                                    <td><span class="badge bg-success">{{ offer.discount_percent }}% OFF</span></td>
+                                    <td>{{ offer.valid_till }}</td>
+                                    <td>
+                                        {% if offer.valid_till >= today %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Expired</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Offer Modal -->
+<div class="modal fade" id="addOfferModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Offer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('shop.add_offer') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Offer Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Discount Percentage</label>
+                        <input type="number" class="form-control" name="discount_percent" min="1" max="100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valid Till</label>
+                        <input type="date" class="form-control" name="valid_till" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Offer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Rohidas Footwear - Smart Management System{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="/">
+            <i class="fas fa-shoe-prints text-success me-2"></i>Rohidas Footwear
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+                <li class="nav-item dropdown ms-3">
+                    <button class="btn btn-success dropdown-toggle px-4" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ url_for('auth.admin_login') }}">
+                            <i class="fas fa-user-shield me-2"></i>Admin Login
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('auth.shop_login') }}">
+                            <i class="fas fa-store me-2"></i>Shop Management Login
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('auth.marketing_login') }}">
+                            <i class="fas fa-bullhorn me-2"></i>Marketing Login
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-3 fw-bold mb-4">Smart Management for Your Footwear Business</h1>
+                <p class="lead text-muted mb-4">Manage your shop, website and marketing from one powerful platform.</p>
+                <button class="btn btn-success btn-lg px-5 py-3 rounded-pill">
+                    Get Started <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=600&h=400&fit=crop" 
+                     alt="Footwear Store" class="img-fluid rounded-4 shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Powerful Features</h2>
+            <p class="text-muted">Everything you need to manage your footwear business</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="feature-icon bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-chart-line fa-2x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold">Sales Analytics</h5>
+                        <p class="text-muted">Track your sales and inventory in real-time</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="feature-icon bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-boxes fa-2x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold">Inventory Management</h5>
+                        <p class="text-muted">Manage stock levels and product variants</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="feature-icon bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-bullhorn fa-2x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold">Marketing Tools</h5>
+                        <p class="text-muted">Promote your products effectively</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-5 fw-bold mb-4">About Rohidas Footwear</h2>
+                <p class="text-muted mb-4">We provide comprehensive management solutions for footwear businesses. Our platform helps you streamline operations, boost sales, and grow your business.</p>
+                <p class="text-muted">With years of experience in the footwear industry, we understand your needs and deliver solutions that work.</p>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&h=400&fit=crop" 
+                     alt="About Us" class="img-fluid rounded-4 shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Get In Touch</h2>
+            <p class="text-muted">We'd love to hear from you</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-4 text-center mb-4">
+                <div class="contact-icon bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-phone fa-2x text-success"></i>
+                </div>
+                <h5 class="fw-bold">Phone</h5>
+                <p class="text-muted">+91 1234567890</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="contact-icon bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-envelope fa-2x text-success"></i>
+                </div>
+                <h5 class="fw-bold">Email</h5>
+                <p class="text-muted">info@rohidasfootwear.com</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="contact-icon bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-map-marker-alt fa-2x text-success"></i>
+                </div>
+                <h5 class="fw-bold">Location</h5>
+                <p class="text-muted">Mumbai, India</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                <p class="mb-0">&copy; 2024 Rohidas Footwear. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

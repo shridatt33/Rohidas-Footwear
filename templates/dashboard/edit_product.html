@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Product - Shop Dashboard{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ url_for('auth.shop_dashboard') }}">
+            <i class="fas fa-store me-2"></i>Shop Dashboard
+        </a>
+        <div class="ms-auto">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('auth.shop_dashboard') }}">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" href="{{ url_for('shop.manage_products') }}">
+                        <i class="fas fa-box me-2"></i>Manage Products
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_categories') }}">
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_offers') }}">
+                        <i class="fas fa-percent me-2"></i>Offers
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.website_settings') }}">
+                        <i class="fas fa-cog me-2"></i>Website Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Edit Product</h2>
+                <a href="{{ url_for('shop.manage_products') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Products
+                </a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form action="{{ url_for('shop.update_product', id=product.id) }}" method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" name="name" value="{{ product.name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-control" name="category_id" required>
+                                        <option value="">Select Category</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if category.id == product.category_id %}selected{% endif %}>{{ category.category_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3">{{ product.description }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_featured" {% if product.is_featured %}checked{% endif %}>
+                                <label class="form-check-label">Featured Product</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Size Variants (Size, Price, Stock)</label>
+                            <div id="variantsContainer">
+                                {% if product.variants %}
+                                    {% for variant in product.variants %}
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <input type="text" class="form-control" name="sizes[]" value="{{ variant.size }}" placeholder="Size">
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" step="0.01" class="form-control" name="prices[]" value="{{ variant.price }}" placeholder="Price">
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" class="form-control" name="stocks[]" value="{{ variant.stock }}" placeholder="Stock">
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <input type="text" class="form-control" name="sizes[]" placeholder="Size">
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" step="0.01" class="form-control" name="prices[]" placeholder="Price">
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" class="form-control" name="stocks[]" placeholder="Stock">
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="addVariantField()">Add Variant</button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Current Images</label>
+                            <div class="row">
+                                {% for image in product.images %}
+                                <div class="col-md-3 mb-3">
+                                    <div class="card">
+                                        <img src="{{ url_for('static', filename='uploads/products/' + image.image_path) }}" class="card-img-top" alt="Product Image">
+                                        <div class="card-body text-center">
+                                            <a href="{{ url_for('shop.delete_product_image', image_id=image.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this image?')">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Add New Images</label>
+                            <input type="file" class="form-control" name="images" multiple accept="image/*">
+                            <small class="text-muted">You can select multiple images</small>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('shop.manage_products') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Update Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addVariantField() {
+    const container = document.getElementById('variantsContainer');
+    const div = document.createElement('div');
+    div.className = 'row mb-2';
+    div.innerHTML = `
+        <div class="col-3">
+            <input type="text" class="form-control" name="sizes[]" placeholder="Size">
+        </div>
+        <div class="col-3">
+            <input type="number" step="0.01" class="form-control" name="prices[]" placeholder="Price">
+        </div>
+        <div class="col-3">
+            <input type="number" class="form-control" name="stocks[]" placeholder="Stock">
+        </div>
+        <div class="col-3">
+            <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+        </div>
+    `;
+    container.appendChild(div);
+}
+</script>
+{% endblock %}

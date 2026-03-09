@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Category - Shop Dashboard{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ url_for('auth.shop_dashboard') }}">
+            <i class="fas fa-store me-2"></i>Shop Dashboard
+        </a>
+        <div class="ms-auto">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('auth.shop_dashboard') }}">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_products') }}">
+                        <i class="fas fa-box me-2"></i>Manage Products
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" href="{{ url_for('shop.manage_categories') }}">
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_offers') }}">
+                        <i class="fas fa-percent me-2"></i>Offers
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.website_settings') }}">
+                        <i class="fas fa-cog me-2"></i>Website Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Edit Category</h2>
+                <a href="{{ url_for('shop.manage_categories') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Categories
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form action="{{ url_for('shop.update_category', id=category.id) }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Category Name</label>
+                            <input type="text" class="form-control" name="category_name" value="{{ category.category_name }}" required>
+                        </div>
+
+                        {% if category.image %}
+                        <div class="mb-3">
+                            <label class="form-label">Current Image</label>
+                            <div>
+                                <img src="{{ url_for('static', filename='uploads/categories/' + category.image) }}" 
+                                     class="rounded-circle" 
+                                     style="width: 150px; height: 150px; object-fit: cover;" 
+                                     alt="{{ category.category_name }}">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label">{% if category.image %}Change{% else %}Add{% endif %} Image</label>
+                            <input type="file" class="form-control" name="image" accept="image/*">
+                            <small class="text-muted">Recommended: Square image (e.g., 300x300px)</small>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('shop.manage_categories') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Update Category</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_settings.form_title if form_settings else 'Join Us' }} - {{ shop.shop_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center min-vh-100 align-items-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <!-- Shop Name -->
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-success">{{ shop.shop_name }}</h2>
+                    </div>
+
+                    <!-- Form Title & Description -->
+                    <div class="text-center mb-4">
+                        <h4 class="mb-2">{{ form_settings.form_title if form_settings else 'Join Our Exclusive Offers' }}</h4>
+                        <p class="text-muted">{{ form_settings.form_description if form_settings else 'Register now to receive special offers and updates' }}</p>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Registration Form -->
+                    <form method="POST" action="{{ url_for('public.join_shop', shop_slug=shop.shop_slug) }}">
+                        <!-- Name Field -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Full Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="name" name="name" required 
+                                   placeholder="Enter your name">
+                        </div>
+
+                        <!-- Phone Field -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">
+                                <i class="fas fa-phone me-2"></i>Mobile Number <span class="text-danger">*</span>
+                            </label>
+                            <input type="tel" class="form-control form-control-lg" 
+                                   id="phone" name="phone" required 
+                                   placeholder="+91 1234567890">
+                        </div>
+
+                        <!-- Email Field (Conditional) -->
+                        {% if form_settings and form_settings.show_email %}
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email Address (Optional)
+                            </label>
+                            <input type="email" class="form-control form-control-lg" 
+                                   id="email" name="email" 
+                                   placeholder="your@email.com">
+                        </div>
+                        {% endif %}
+
+                        <!-- WhatsApp Opt-in (Conditional) -->
+                        {% if form_settings and form_settings.whatsapp_optin %}
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                       id="whatsapp_consent" name="whatsapp_consent" checked>
+                                <label class="form-check-label" for="whatsapp_consent">
+                                    <i class="fab fa-whatsapp text-success me-1"></i>
+                                    I agree to receive updates via WhatsApp
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Register Now
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Privacy Note -->
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-lock me-1"></i>
+                            Your information is safe and secure
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Website Settings - Shop Dashboard{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ url_for('auth.shop_dashboard') }}">
+            <i class="fas fa-store me-2"></i>Shop Dashboard
+        </a>
+        <div class="ms-auto">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('auth.shop_dashboard') }}">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_products') }}">
+                        <i class="fas fa-box me-2"></i>Products
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_categories') }}">
+                        <i class="fas fa-tags me-2"></i>Categories
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_offers') }}">
+                        <i class="fas fa-percent me-2"></i>Offers
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" href="{{ url_for('shop.website_settings') }}">
+                        <i class="fas fa-cog me-2"></i>Website Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <h2 class="mb-4"><i class="fas fa-cog me-2"></i>Website Settings</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        
+                        <!-- Branding Section -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-palette me-2"></i>Branding</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Logo</label>
+                                    {% if settings and settings.logo %}
+                                    <div class="mb-2">
+                                        <img src="{{ url_for('static', filename='uploads/' + settings.logo) }}" 
+                                             style="height: 60px;" class="border rounded p-2">
+                                    </div>
+                                    {% endif %}
+                                    <input type="file" class="form-control" name="logo" accept="image/*">
+                                    <small class="text-muted">Recommended: 200x60px, PNG with transparent background</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Hero Image</label>
+                                    {% if settings and settings.hero_image %}
+                                    <div class="mb-2">
+                                        <img src="{{ url_for('static', filename='uploads/' + settings.hero_image) }}" 
+                                             style="height: 60px;" class="border rounded">
+                                    </div>
+                                    {% endif %}
+                                    <input type="file" class="form-control" name="hero_image" accept="image/*">
+                                    <small class="text-muted">Recommended: 600x400px</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Section -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-image me-2"></i>Hero Section</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Banner Title</label>
+                                <input type="text" class="form-control" name="banner_title" 
+                                       value="{{ settings.banner_title if settings else '' }}" 
+                                       placeholder="Step Into Style & Comfort">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Banner Subtitle</label>
+                                <textarea class="form-control" name="banner_subtitle" rows="2" 
+                                          placeholder="Discover premium footwear for every occasion">{{ settings.banner_subtitle if settings else '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-phone me-2"></i>Contact Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contact Number</label>
+                                    <input type="text" class="form-control" name="contact_number" 
+                                           value="{{ settings.contact_number if settings else '' }}" 
+                                           placeholder="+91 1234567890">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">WhatsApp Number</label>
+                                    <input type="text" class="form-control" name="whatsapp_number" 
+                                           value="{{ settings.whatsapp_number if settings else '' }}" 
+                                           placeholder="+91 1234567890">
+                                    <small class="text-muted">Include country code (e.g., +91)</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="address" rows="2" 
+                                          placeholder="Shop No. 123, Fashion Street, Mumbai - 400001">{{ settings.address if settings else '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-share-alt me-2"></i>Social Media Links</h5>
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fab fa-facebook me-2"></i>Facebook URL</label>
+                                <input type="url" class="form-control" name="facebook_url" 
+                                       value="{{ settings.facebook_url if settings else '' }}" 
+                                       placeholder="https://facebook.com/yourpage">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fab fa-instagram me-2"></i>Instagram URL</label>
+                                <input type="url" class="form-control" name="instagram_url" 
+                                       value="{{ settings.instagram_url if settings else '' }}" 
+                                       placeholder="https://instagram.com/yourpage">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fab fa-twitter me-2"></i>Twitter URL</label>
+                                <input type="url" class="form-control" name="twitter_url" 
+                                       value="{{ settings.twitter_url if settings else '' }}" 
+                                       placeholder="https://twitter.com/yourpage">
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-copyright me-2"></i>Footer</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Footer Text</label>
+                                <input type="text" class="form-control" name="footer_text" 
+                                       value="{{ settings.footer_text if settings else '' }}" 
+                                       placeholder="© 2024 Your Shop Name. All rights reserved.">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                            <i class="fas fa-save me-2"></i>Save All Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

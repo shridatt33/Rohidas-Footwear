@@ -1,0 +1,109 @@
+{% extends 'dashboard/admin_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Add New Shop</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.list_shops') }}">Shops</a></li>
+                    <li class="breadcrumb-item active">Add New</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.add_shop') }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="shop_name" class="form-label">Shop Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="shop_name" name="shop_name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="owner_name" class="form-label">Owner Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="owner_name" name="owner_name" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="auto_generate_password" name="auto_generate_password" onchange="togglePasswordField()">
+                            <label class="form-check-label" for="auto_generate_password">
+                                Auto-generate secure password
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="password_field">
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="8">
+                        <small class="text-muted">Minimum 8 characters</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Create Shop
+                        </button>
+                        <a href="{{ url_for('admin.list_shops') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePasswordField() {
+    const checkbox = document.getElementById('auto_generate_password');
+    const passwordField = document.getElementById('password_field');
+    const passwordInput = document.getElementById('password');
+    
+    if (checkbox.checked) {
+        passwordField.style.display = 'none';
+        passwordInput.removeAttribute('required');
+    } else {
+        passwordField.style.display = 'block';
+        passwordInput.setAttribute('required', 'required');
+    }
+}
+</script>
+{% endblock %}

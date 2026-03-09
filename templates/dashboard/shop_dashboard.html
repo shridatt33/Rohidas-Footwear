@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Dashboard - Rohidas Footwear{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">
+            <i class="fas fa-store me-2"></i>Shop Dashboard
+        </a>
+        <div class="ms-auto">
+            <span class="text-white me-3">Welcome, {{ user_name }}</span>
+            {% if shop_name %}
+            <a href="{{ url_for('shop.public_website', shop_name=shop_name) }}" target="_blank" class="btn btn-light btn-sm me-2">
+                <i class="fas fa-external-link-alt me-1"></i>View Website
+            </a>
+            {% endif %}
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" href="{{ url_for('auth.shop_dashboard') }}">
+                        <i class="fas fa-home me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_products') }}">
+                        <i class="fas fa-box me-2"></i>Manage Products
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_categories') }}">
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.manage_offers') }}">
+                        <i class="fas fa-percent me-2"></i>Offers
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="{{ url_for('shop.website_settings') }}">
+                        <i class="fas fa-cog me-2"></i>Website Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <h2 class="mb-4">Dashboard Overview</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                            <h3 class="fw-bold">{{ total_products }}</h3>
+                            <p class="text-muted mb-0">Total Products</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tags fa-3x text-success mb-3"></i>
+                            <h3 class="fw-bold">{{ total_categories }}</h3>
+                            <p class="text-muted mb-0">Categories</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-globe fa-3x text-warning mb-3"></i>
+                            <h3 class="fw-bold">Active</h3>
+                            <p class="text-muted mb-0">Website Status</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-eye fa-3x text-danger mb-3"></i>
+                            <h3 class="fw-bold">Live</h3>
+                            <p class="text-muted mb-0">Public Site</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">Recent Products</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Featured</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_products %}
+                                    {% for product in recent_products %}
+                                    <tr>
+                                        <td>{{ product.name }}</td>
+                                        <td>₹{{ product.price }}</td>
+                                        <td>{{ product.stock }}</td>
+                                        <td>
+                                            {% if product.is_featured %}
+                                                <span class="badge bg-success">Yes</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">No</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No products yet. Add your first product!</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

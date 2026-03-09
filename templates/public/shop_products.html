@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Products - {{ shop.shop_name }}{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}">
+            {% if settings and settings.logo %}
+                <img src="{{ url_for('static', filename='uploads/' + settings.logo) }}" 
+                     alt="{{ shop.shop_name }}" style="max-height: 50px;">
+            {% else %}
+                <i class="fas fa-shoe-prints text-success me-2"></i>{{ shop.shop_name }}
+            {% endif %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('shop.public_products', shop_name=shop.shop_name) }}">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}#contact">Contact</a>
+                </li>
+                {% if settings and settings.whatsapp_number %}
+                <li class="nav-item">
+                    <a class="btn btn-success btn-sm ms-2" href="https://wa.me/{{ settings.whatsapp_number.replace('+', '').replace(' ', '') }}" target="_blank">
+                        <i class="fab fa-whatsapp me-1"></i>WhatsApp
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% if offer %}
+<div class="bg-success text-white text-center py-2">
+    <strong>{{ offer.title }} - {{ offer.discount_percent }}% OFF!</strong> Valid till {{ offer.valid_till }}
+</div>
+{% endif %}
+
+<div class="container py-5">
+    <h2 class="mb-4">All Products</h2>
+    
+    <!-- Categories Filter -->
+    {% if categories %}
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('shop.public_products', shop_name=shop.shop_name) }}" class="btn btn-outline-success {% if not selected_category %}active{% endif %}">All</a>
+            {% for category in categories %}
+            <a href="{{ url_for('shop.public_products', shop_name=shop.shop_name, category=category.id) }}" 
+               class="btn btn-outline-success {% if selected_category == category.id %}active{% endif %}">{{ category.category_name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 product-card">
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" 
+                     class="card-img-top" alt="{{ product.name }}">
+                {% else %}
+                <div class="product-img-placeholder">
+                    <i class="fas fa-shoe-prints fa-4x text-white opacity-50"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-2">
+                        {% if product.category_name %}
+                        <span class="badge bg-success rounded-pill">{{ product.category_name }}</span>
+                        {% endif %}
+                        {% if product.is_featured %}
+                        <span class="badge bg-warning text-dark rounded-pill">Featured</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
+                    <p class="text-muted small mb-3 flex-grow-1">{{ product.description[:80] if product.description else 'Premium quality footwear' }}...</p>
+                    
+                    <div class="mb-3">
+                        {% if offer %}
+                        <h4 class="text-success mb-0">₹{{ "%.2f"|format(product.price * (100 - offer.discount_percent) / 100) }}</h4>
+                        <small class="text-muted text-decoration-line-through">₹{{ product.price }}</small>
+                        {% else %}
+                        <h4 class="text-success mb-0">₹{{ product.price }}</h4>
+                        {% endif %}
+                        <small class="text-muted d-block mt-1">
+                            {% if product.stock > 0 %}
+                            <i class="fas fa-check-circle text-success me-1"></i>In Stock ({{ product.stock }} units)
+                            {% else %}
+                            <i class="fas fa-times-circle text-danger me-1"></i>Out of Stock
+                            {% endif %}
+                        </small>
+                    </div>
+                    
+                    <a href="{{ url_for('shop.public_product_detail', shop_name=shop.shop_name, product_id=product.id) }}" 
+                       class="btn btn-success w-100 buy-btn">
+                        <i class="fas fa-shopping-cart me-2"></i>Buy Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">No products available yet</h4>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    {% if settings and settings.logo %}
+                        <img src="{{ url_for('static', filename='uploads/' + settings.logo) }}" 
+                             alt="{{ shop.shop_name }}" style="max-height: 40px; filter: brightness(0) invert(1);">
+                    {% else %}
+                        {{ shop.shop_name }}
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ url_for('shop.public_website', shop_name=shop.shop_name) }}" class="text-muted text-decoration-none">Home</a></li>
+                    <li class="mb-2"><a href="{{ url_for('shop.public_products', shop_name=shop.shop_name) }}" class="text-muted text-decoration-none">Products</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">Follow Us</h5>
+                <div class="d-flex gap-3">
+                    {% if settings and settings.facebook_url %}
+                    <a href="{{ settings.facebook_url }}" target="_blank" class="text-white fs-4"><i class="fab fa-facebook"></i></a>
+                    {% endif %}
+                    {% if settings and settings.instagram_url %}
+                    <a href="{{ settings.instagram_url }}" target="_blank" class="text-white fs-4"><i class="fab fa-instagram"></i></a>
+                    {% endif %}
+                    {% if settings and settings.twitter_url %}
+                    <a href="{{ settings.twitter_url }}" target="_blank" class="text-white fs-4"><i class="fab fa-twitter"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <hr class="border-secondary my-4">
+        <div class="text-center">
+            <p class="mb-0">{{ settings.footer_text if settings and settings.footer_text else '© 2024 ' + shop.shop_name + '. All rights reserved.' }}</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+.product-card img {
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+.product-img-placeholder {
+    height: 250px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px 12px 0 0;
+}
+
+.product-card {
+    transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.buy-btn {
+    background-color: #198754;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.buy-btn:hover {
+    background-color: #157347;
+}
+</style>
+{% endblock %}
